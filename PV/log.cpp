@@ -7,15 +7,39 @@
 // 全局日志级别变量
 LogLevel g_log_level = LOG_LEVEL_INFO;
 
-// 日志输出互斥锁，保证多线程下日志原子输出
-static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
+// 递归互斥锁，允许同一线程重复加锁（防止 LOG_BEGIN/END 嵌套死锁）
+static pthread_mutexattr_t log_mutex_attr;
+static pthread_once_t log_mutex_once = PTHREAD_ONCE_INIT;
+pthread_mutex_t log_mutex;
 
-void log_init(int enable_debug) {
-    g_log_level = enable_debug ? LOG_LEVEL_DEBUG : LOG_LEVEL_INFO;
-    LOG_INFO("日志系统初始化完成，Debug模式: %s", enable_debug ? "开启" : "关闭");
+// 初始化递归锁（只执行一次）
+static void init_log_mutex_once() {
+    pthread_mutexattr_init(&log_mutex_attr);
+    pthread_mutexattr_settype(&log_mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&log_mutex, &log_mutex_attr);
+}
+
+void log_init(int level) {
+    // 首先初始化锁（线程安全，只执行一次）
+    pthread_once(&log_mutex_once, init_log_mutex_once);
+
+    // level: 0=INFO, 1=DEBUG, 2=SEM
+    if (level >= 2) {
+        g_log_level = LOG_LEVEL_SEM;
+        printf("日志系统初始化完成，级别: SEM (信号量操作)\n");
+    } else if (level >= 1) {
+        g_log_level = LOG_LEVEL_DEBUG;
+        printf("日志系统初始化完成，级别: DEBUG\n");
+    } else {
+        g_log_level = LOG_LEVEL_INFO;
+        printf("日志系统初始化完成，级别: INFO\n");
+    }
 }
 
 void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...) {
+    // 确保锁已初始化（线程安全，只执行一次）
+    pthread_once(&log_mutex_once, init_log_mutex_once);
+
     // 加锁，保证日志输出原子性
     pthread_mutex_lock(&log_mutex);
 

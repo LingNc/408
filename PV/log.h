@@ -3,20 +3,23 @@
 
 #include <cstdio>
 
-// 日志级别
+// 日志级别（值越大越详细）
 enum LogLevel {
-    LOG_LEVEL_INFO = 0,
-    LOG_LEVEL_DEBUG
+    LOG_LEVEL_INFO = 0,   // INFO 级别
+    LOG_LEVEL_DEBUG,      // DEBUG 级别
+    LOG_LEVEL_SEM         // SEM 级别（最详细，包括信号量操作）
 };
 
 // 当前日志级别配置（全局变量）
 extern LogLevel g_log_level;
+extern pthread_mutex_t log_mutex;  // 日志互斥锁（外部可访问）
 
 // 获取当前线程ID（从 thread.cpp 导入，C链接）
 extern "C" int get_current_tid();
 
-// 初始化日志系统，enable_debug 为 0 时关闭 debug 输出
-void log_init(int enable_debug);
+// 初始化日志系统
+// level: 0=INFO, 1=DEBUG, 2=SEM
+void log_init(int level);
 
 // 内部使用，不要直接调用
 void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...);
@@ -28,13 +31,20 @@ void log_print(const char *level, const char *file, int line, int tid, const cha
         if (g_log_level >= LOG_LEVEL_DEBUG) \
             log_print("DEBUG", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__); \
     } while(0)
+#define LOG_SEM(fmt, ...) \
+    do { \
+        if (g_log_level >= LOG_LEVEL_SEM) \
+            log_print("SEM  ", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__); \
+    } while(0)
 
-// 信号量操作日志宏（自动获取变量名）
-// LOG_SEM_P(plate) -> P操作：plate减少到 0
-// LOG_SEM_V(plate) -> V操作：plate增加到 1
+// 信号量操作日志宏（使用 SEM 级别）
 #define LOG_SEM_P(sem) \
-    LOG_DEBUG("P操作：%s减少到 %d", #sem, (sem).value)
+    LOG_SEM("P操作：%s减少到 %d", #sem, (sem).value)
 #define LOG_SEM_V(sem) \
-    LOG_DEBUG("V操作：%s增加到 %d", #sem, (sem).value)
+    LOG_SEM("V操作：%s增加到 %d", #sem, (sem).value)
+
+// 日志区域加锁宏（用于包裹一段日志，保证原子输出）
+#define LOG_BEGIN()   pthread_mutex_lock(&log_mutex)
+#define LOG_END()     pthread_mutex_unlock(&log_mutex)
 
 #endif // LOG_H
