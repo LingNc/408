@@ -11,7 +11,7 @@ void log_init(int enable_debug) {
     LOG_INFO("日志系统初始化完成，Debug模式: %s", enable_debug ? "开启" : "关闭");
 }
 
-void log_print(const char *level, const char *file, int line, const char *fmt, ...) {
+void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...) {
     // 获取当前时间
     time_t now;
     time(&now);
@@ -27,10 +27,10 @@ void log_print(const char *level, const char *file, int line, const char *fmt, .
         p++;
     }
 
-    // 打印时间、级别、文件和行号
-    printf("[%02d:%02d:%02d] [%-5s] %-7s:%-4d ",
+    // 打印时间、线程ID、级别、文件和行号
+    printf("[%02d:%02d:%02d] [T%02d] [%-5s] %-7s:%-4d ",
            local->tm_hour, local->tm_min, local->tm_sec,
-           level, filename, line);
+           tid, level, filename, line);
 
     // 打印用户消息
     va_list args;

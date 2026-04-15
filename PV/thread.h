@@ -14,6 +14,7 @@ struct ThreadInfo {
     ThreadFunc func;
     int repeat;
     std::string name;
+    int tid;  // 线程ID (从1开始，供日志使用)
 };
 
 // 线程管理器类
