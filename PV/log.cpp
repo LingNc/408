@@ -2,9 +2,13 @@
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
+#include <pthread.h>
 
 // 全局日志级别变量
 LogLevel g_log_level = LOG_LEVEL_INFO;
+
+// 日志输出互斥锁，保证多线程下日志原子输出
+static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void log_init(int enable_debug) {
     g_log_level = enable_debug ? LOG_LEVEL_DEBUG : LOG_LEVEL_INFO;
@@ -12,6 +16,9 @@ void log_init(int enable_debug) {
 }
 
 void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...) {
+    // 加锁，保证日志输出原子性
+    pthread_mutex_lock(&log_mutex);
+
     // 获取当前时间
     time_t now;
     time(&now);
@@ -39,4 +46,8 @@ void log_print(const char *level, const char *file, int line, int tid, const cha
     va_end(args);
 
     printf("\n");
+    fflush(stdout);  // 立即刷新缓冲区
+
+    // 解锁
+    pthread_mutex_unlock(&log_mutex);
 }

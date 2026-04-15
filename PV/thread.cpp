@@ -11,37 +11,40 @@ extern "C" int get_current_tid() {
 
 // 线程包装函数
 void* ThreadManager::threadWrapper(void* arg) {
-    ThreadInfo* info = (ThreadInfo*)arg;
-    current_tid = info->tid;  // 设置线程局部ID（供日志使用）
-    for (int i = 0; i < info->repeat; i++) {
-        info->func();  // 不传递参数，线程ID从日志获取
+    ThreadInstance* inst = (ThreadInstance*)arg;
+    current_tid = inst->tid;  // 设置线程局部ID（供日志使用）
+    for (int i = 0; i < inst->repeat; i++) {
+        inst->func();  // 不传递参数，线程ID从日志获取
     }
     return NULL;
 }
 
-ThreadManager::ThreadManager() {}
+ThreadManager::ThreadManager() : next_tid(1) {}
 
 ThreadManager::~ThreadManager() {
     clear();
 }
 
-void ThreadManager::addThread(ThreadFunc func, int repeat, const char* name) {
-    ThreadInfo info;
-    info.func = func;
-    info.repeat = repeat;
-    info.name = name ? name : "";
-    info.tid = threads.size() + 1;  // 线程ID从1开始
-    threads.push_back(info);
+void ThreadManager::addThread(ThreadFunc func, int count, const char* name, int repeat) {
+    // 创建 count 个线程实例
+    for (int i = 0; i < count; i++) {
+        ThreadInstance inst;
+        inst.func = func;
+        inst.repeat = repeat;  // 每个线程重复执行 repeat 次
+        inst.name = name ? name : "";
+        inst.tid = next_tid++;  // 全局线程ID从1开始递增
+        instances.push_back(inst);
+    }
 }
 
 void ThreadManager::runAll() {
     pthread_ids.clear();
-    pthread_ids.resize(threads.size());
+    pthread_ids.resize(instances.size());
 
     // 创建所有线程
-    for (size_t i = 0; i < threads.size(); i++) {
-        ThreadInfo* info = &threads[i];
-        if (pthread_create(&pthread_ids[i], NULL, threadWrapper, info) != 0) {
+    for (size_t i = 0; i < instances.size(); i++) {
+        ThreadInstance* inst = &instances[i];
+        if (pthread_create(&pthread_ids[i], NULL, threadWrapper, inst) != 0) {
             perror("pthread_create failed");
             return;
         }
@@ -54,6 +57,7 @@ void ThreadManager::runAll() {
 }
 
 void ThreadManager::clear() {
-    threads.clear();
+    instances.clear();
     pthread_ids.clear();
+    next_tid = 1;
 }

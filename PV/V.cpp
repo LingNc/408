@@ -1,4 +1,5 @@
 #include "V.h"
+#include "log.h"
 
 void V(semaphore &S){
     // 进入原语

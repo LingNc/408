@@ -1,4 +1,5 @@
 #include "P.h"
+#include "log.h"
 
 void P(semaphore &S){
     pthread_mutex_lock(&S.lock);

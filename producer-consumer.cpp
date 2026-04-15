@@ -10,33 +10,35 @@ int a=0,b=0,c=0;
 
 void producer(){
     a++;
-    LOG_INFO("生产 %d",a);
+    LOG_INFO("[生产者] 生产 %d", a);
     P(empty);
     P(mutex);
-    a--;
+    // a--;
     b++;
-    LOG_INFO("放入缓冲区 %d",b);
+    LOG_INFO("[生产者] 放入缓冲区，当前缓冲区=%d", b);
     V(mutex);
     V(full);
 }
 
 void consumer(){
+    LOG_DEBUG("[消费者] 获取资源");
     P(full);
     P(mutex);
     b--;
-    LOG_INFO("取出 %d",b);
+    LOG_INFO("[消费者] 取出，当前缓冲区=%d", b);
     V(mutex);
     V(empty);
     c++;
-    LOG_INFO("消费 %d",c);
+    LOG_INFO("[消费者] 消费 %d", c);
 }
 
 int main(){
     log_init(1);
 
     ThreadManager tm;
-    tm.addThread(producer,10,"生产者");
-    tm.addThread(consumer,10,"消费者");
+    // addThread(函数, 线程数量, 名称, 每个线程重复次数)
+    tm.addThread(producer, 20, "生产者",5);  // 5个生产者线程，每个执行2次
+    tm.addThread(consumer, 1, "消费者",100);  // 5个消费者线程，每个执行2次
 
     tm.runAll();
     return 0;

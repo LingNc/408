@@ -29,4 +29,12 @@ void log_print(const char *level, const char *file, int line, int tid, const cha
             log_print("DEBUG", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__); \
     } while(0)
 
+// 信号量操作日志宏（自动获取变量名）
+// LOG_SEM_P(plate) -> P操作：plate减少到 0
+// LOG_SEM_V(plate) -> V操作：plate增加到 1
+#define LOG_SEM_P(sem) \
+    LOG_DEBUG("P操作：%s减少到 %d", #sem, (sem).value)
+#define LOG_SEM_V(sem) \
+    LOG_DEBUG("V操作：%s增加到 %d", #sem, (sem).value)
+
 #endif // LOG_H
