@@ -38,6 +38,14 @@ bundle: ../PV.hpp
 	@echo "#define PV_HPP" >> $@
 	@echo "" >> $@
 	@echo "/* ============================================" >> $@
+	@echo " * VERSION" >> $@
+	@echo " * ============================================ */" >> $@
+	@echo "#define PV_VERSION_MAJOR 0" >> $@
+	@echo "#define PV_VERSION_MINOR 1" >> $@
+	@echo "#define PV_VERSION_PATCH 0" >> $@
+	@echo "#define PV_VERSION \"v0.1.0\"" >> $@
+	@echo "" >> $@
+	@echo "/* ============================================" >> $@
 	@echo " * DECLARATIONS (Headers in dependency order)" >> $@
 	@echo " * ============================================ */" >> $@
 	@echo "" >> $@
