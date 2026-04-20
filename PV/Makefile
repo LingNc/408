@@ -38,23 +38,12 @@ bundle: ../PV.hpp
 	@echo "#define PV_HPP" >> $@
 	@echo "" >> $@
 	@echo "/* ============================================" >> $@
-	@echo " * SYSTEM HEADERS" >> $@
-	@echo " * ============================================ */" >> $@
-	@echo "#include <pthread.h>" >> $@
-	@echo "#include <unistd.h>" >> $@
-	@echo "#include <cstdio>" >> $@
-	@echo "#include <cstdarg>" >> $@
-	@echo "#include <ctime>" >> $@
-	@echo "#include <vector>" >> $@
-	@echo "#include <string>" >> $@
-	@echo "" >> $@
-	@echo "/* ============================================" >> $@
 	@echo " * DECLARATIONS (Headers in dependency order)" >> $@
 	@echo " * ============================================ */" >> $@
 	@echo "" >> $@
 	@for header in $(HEADER_ORDER); do \
 		echo "/* ---------- $$header ---------- */" >> $@; \
-		sed '/^#include/d' $$header >> $@; \
+		sed 's/#include.*".*"//g' $$header >> $@; \
 		echo "" >> $@; \
 	done
 	@echo "/* ============================================" >> $@

@@ -6,5 +6,6 @@ build
 C
 PV.hpp
 a.out
+**/*temp*
 
 !Makefile
