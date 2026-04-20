@@ -20,7 +20,10 @@
 // 4. 线程管理器（依赖 P/V 和日志）
 #include "thread.h"
 
-// 5. 常用宏定义（依赖 thread 中的 get_current_tid）
+// 5. 工具函数（依赖 log）
+#include "utils.h"
+
+// 6. 常用宏定义（依赖 thread 中的 get_current_tid）
 #include "macros.h"
 
 #endif // PV_H
