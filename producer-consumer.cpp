@@ -8,24 +8,24 @@ semaphore full = 0;
 
 int a=0,b=0,c=0;
 
-void producer(){
+process producer(){
     a++;
-    LOG_INFO("[生产者] 生产 %d", a);
+    work(1,1,"[生产者] 生产 %d", a);
     P(empty);
     P(mutex);
     // a--;
     b++;
-    LOG_INFO("[生产者] 放入缓冲区，当前缓冲区=%d", b);
+    work(1,1,"[生产者] 放入缓冲区，当前缓冲区=%d", b);
     V(mutex);
     V(full);
 }
 
-void consumer(){
+process consumer(){
     LOG_DEBUG("[消费者] 获取资源");
     P(full);
     P(mutex);
     b--;
-    LOG_INFO("[消费者] 取出，当前缓冲区=%d", b);
+    work(1,1,"[消费者] 从缓冲区取出，当前缓冲区=%d", b);
     V(mutex);
     V(empty);
     c++;
