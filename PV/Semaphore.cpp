@@ -19,6 +19,11 @@ semaphore& semaphore::operator=(int val) {
     return *this;
 }
 
+// 类型转换运算符：支持 printf("%d", sem) 等用法
+semaphore::operator int() const {
+    return value;
+}
+
 // 析构函数
 semaphore::~semaphore() {
     pthread_mutex_destroy(&lock);

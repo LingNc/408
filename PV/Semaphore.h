@@ -22,6 +22,9 @@ public:
     // 赋值运算符（支持 sem = 2 语法）
     semaphore& operator=(int val);
 
+    // 类型转换运算符（支持 printf("%d", sem) 语法）
+    operator int() const;
+
     // 比较运算符（比较 value）- 声明
     bool operator>(int val) const;
     bool operator<(int val) const;
