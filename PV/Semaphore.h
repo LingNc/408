@@ -22,6 +22,22 @@ public:
     // 赋值运算符（支持 sem = 2 语法）
     semaphore& operator=(int val);
 
+    // 比较运算符（比较 value）- 声明
+    bool operator>(int val) const;
+    bool operator<(int val) const;
+    bool operator>=(int val) const;
+    bool operator<=(int val) const;
+    bool operator==(int val) const;
+    bool operator!=(int val) const;
+
+    // 友元函数，支持 int > semaphore 语法 - 声明
+    friend bool operator>(int val, const semaphore& sem);
+    friend bool operator<(int val, const semaphore& sem);
+    friend bool operator>=(int val, const semaphore& sem);
+    friend bool operator<=(int val, const semaphore& sem);
+    friend bool operator==(int val, const semaphore& sem);
+    friend bool operator!=(int val, const semaphore& sem);
+
     // 析构函数
     ~semaphore();
 };

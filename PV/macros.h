@@ -13,4 +13,7 @@
 // 获取线程名称字符串
 #define _name (get_current_thread_name())
 
+// 定义函数返回值写法
+typedef void process;
+
 #endif // MACROS_H

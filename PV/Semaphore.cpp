@@ -24,3 +24,19 @@ semaphore::~semaphore() {
     pthread_mutex_destroy(&lock);
     pthread_cond_destroy(&cond);
 }
+
+// 比较运算符实现（semaphore > int）
+bool semaphore::operator>(int val) const { return value > val; }
+bool semaphore::operator<(int val) const { return value < val; }
+bool semaphore::operator>=(int val) const { return value >= val; }
+bool semaphore::operator<=(int val) const { return value <= val; }
+bool semaphore::operator==(int val) const { return value == val; }
+bool semaphore::operator!=(int val) const { return value != val; }
+
+// 友元函数实现（int > semaphore）
+bool operator>(int val, const semaphore& sem) { return val > sem.value; }
+bool operator<(int val, const semaphore& sem) { return val < sem.value; }
+bool operator>=(int val, const semaphore& sem) { return val >= sem.value; }
+bool operator<=(int val, const semaphore& sem) { return val <= sem.value; }
+bool operator==(int val, const semaphore& sem) { return val == sem.value; }
+bool operator!=(int val, const semaphore& sem) { return val != sem.value; }
