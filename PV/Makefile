@@ -16,8 +16,9 @@ all: $(BUILD_DIR) $(TARGET)
 # 从 PV.h 中提取包含顺序（去掉注释和空行）
 HEADER_ORDER := $(shell grep '#include' PV.h | grep -v '//' | sed 's/#include "//g; s/"//g')
 
-# 生成 cpp 文件列表（根据头文件对应）
+# 生成 cpp 文件列表（只包含存在对应 .cpp 的头文件）
 CPP_ORDER := $(patsubst %.h,%.cpp,$(filter %.h,$(HEADER_ORDER)))
+CPP_ORDER := $(foreach cpp,$(CPP_ORDER),$(if $(wildcard $(cpp)),$(cpp),))
 
 # 所有参与打包的文件（按依赖顺序）
 BUNDLE_FILES := $(HEADER_ORDER) $(CPP_ORDER)
