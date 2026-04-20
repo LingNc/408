@@ -51,7 +51,7 @@ LOG_INFO("%d", s);    // 自动转换为s.value
 ```cpp
 P(sem);              // P操作，信号量名自动解析
 V(sem);              // V操作
-// 支持数组索引自动计算: P(chopstick[i]) 显示为 "chopstick[0]"
+// 支持数组索引自动计算: P(chopstick[i]) 显示为如 "chopstick[0]"
 // i 是当前线程的 0-based 索引，无需定义即可直接使用，如：
 P(chopstick[i]);
 ```
@@ -107,3 +107,7 @@ process      // void 的类型别名
 - 自动信号量名解析：`P(chopstick[i])` 日志显示实际索引
 - 线程安全日志，带时间戳和线程ID
 - 可复现随机数（通过 `work_init`）
+
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE) 开源。
