@@ -13,6 +13,7 @@ enum LogLevel {
 // 当前日志级别配置（全局变量）
 extern LogLevel g_log_level;
 extern pthread_mutex_t log_mutex;  // 日志互斥锁（外部可访问）
+extern bool g_log_show_file;       // 是否显示文件名和行号（默认关闭）
 
 // 获取当前线程ID和名字（从 thread.cpp 导入，C链接）
 extern "C" int get_current_tid();
@@ -20,10 +21,17 @@ extern "C" const char* get_current_thread_name();
 
 // 初始化日志系统
 // level: 0=INFO, 1=DEBUG, 2=SEM
-void log_init(int level);
+// show_file: 是否显示文件名和行号
+void log_init(int level, bool show_file = false);
+
+// 设置最大线程名字长度（用于对齐），自动检测传入0
+void log_set_max_name_len(int len = 0);
 
 // 内部使用，不要直接调用
 void log_print(const char *level, const char *file, int line, int tid, const char *name, const char *fmt, ...);
+
+// 辅助函数：计算字符串宽度（中文字符算2个宽度）
+int str_width(const char* str);
 
 // 日志宏（自动获取线程ID和名字）
 #define LOG_INFO(fmt, ...)  log_print("INFO", __FILE__, __LINE__, get_current_tid(), get_current_thread_name(), fmt, ##__VA_ARGS__)
