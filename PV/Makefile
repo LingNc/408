@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -Wall -g -pthread
 TARGET = test
 BUILD_DIR = build
-OBJS = $(BUILD_DIR)/Semaphore.o $(BUILD_DIR)/P.o $(BUILD_DIR)/V.o $(BUILD_DIR)/log.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/test.o
+OBJS = $(BUILD_DIR)/Semaphore.o $(BUILD_DIR)/expr.o $(BUILD_DIR)/P.o $(BUILD_DIR)/V.o $(BUILD_DIR)/log.o $(BUILD_DIR)/thread.o $(BUILD_DIR)/test.o
 
 .PHONY: all clean bundle
 
@@ -74,10 +74,13 @@ $(TARGET): $(OBJS)
 $(BUILD_DIR)/Semaphore.o: Semaphore.cpp Semaphore.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/P.o: P.cpp P.h Semaphore.h
+$(BUILD_DIR)/expr.o: expr.cpp expr.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/V.o: V.cpp V.h Semaphore.h
+$(BUILD_DIR)/P.o: P.cpp P.h Semaphore.h expr.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/V.o: V.cpp V.h Semaphore.h expr.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/log.o: log.cpp log.h

@@ -4,6 +4,9 @@
 // PV Library Master Header
 // 按照依赖顺序包含所有模块（基础 -> 上层）
 
+// 0. 表达式计算工具（无依赖，被 P/V 使用）
+#include "expr.h"
+
 // 1. 基础信号量（无依赖）
 #include "Semaphore.h"
 
