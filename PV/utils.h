@@ -3,6 +3,11 @@
 
 #include <cstddef>
 
+// 初始化 work 函数的随机数生成器种子
+// seed: 随机种子，如果为 0 或未调用此函数，则使用自动随机种子
+// 设置了种子后，各线程使用 seed + (tid-1) 作为独立种子
+void work_init(unsigned int seed = 0);
+
 // 模拟工作任务：输出日志并随机睡眠一段时间
 // min_ms: 最小睡眠时间（毫秒）
 // max_ms: 最大睡眠时间（毫秒）
