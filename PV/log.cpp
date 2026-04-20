@@ -36,7 +36,7 @@ void log_init(int level) {
     }
 }
 
-void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...) {
+void log_print(const char *level, const char *file, int line, int tid, const char *name, const char *fmt, ...) {
     // 确保锁已初始化（线程安全，只执行一次）
     pthread_once(&log_mutex_once, init_log_mutex_once);
 
@@ -58,10 +58,16 @@ void log_print(const char *level, const char *file, int line, int tid, const cha
         p++;
     }
 
-    // 打印时间、线程ID、级别、文件和行号
-    printf("[%02d:%02d:%02d] [T%02d] [%-5s] %-7s:%-4d ",
-           local->tm_hour, local->tm_min, local->tm_sec,
-           tid, level, filename, line);
+    // 打印时间、线程ID和名字、级别、文件和行号
+    if (name && name[0]) {
+        printf("[%02d:%02d:%02d] [%-5s] %-7s:%-4d [T%02d:%s] ",
+               local->tm_hour, local->tm_min, local->tm_sec,
+               level, filename, line, tid, name);
+    } else {
+        printf("[%02d:%02d:%02d] [%-5s] %-7s:%-4d [T%02d] ",
+               local->tm_hour, local->tm_min, local->tm_sec,
+               level, filename, line, tid);
+    }
 
     // 打印用户消息
     va_list args;

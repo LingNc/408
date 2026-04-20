@@ -14,27 +14,28 @@ enum LogLevel {
 extern LogLevel g_log_level;
 extern pthread_mutex_t log_mutex;  // 日志互斥锁（外部可访问）
 
-// 获取当前线程ID（从 thread.cpp 导入，C链接）
+// 获取当前线程ID和名字（从 thread.cpp 导入，C链接）
 extern "C" int get_current_tid();
+extern "C" const char* get_current_thread_name();
 
 // 初始化日志系统
 // level: 0=INFO, 1=DEBUG, 2=SEM
 void log_init(int level);
 
 // 内部使用，不要直接调用
-void log_print(const char *level, const char *file, int line, int tid, const char *fmt, ...);
+void log_print(const char *level, const char *file, int line, int tid, const char *name, const char *fmt, ...);
 
-// 日志宏（自动获取线程ID）
-#define LOG_INFO(fmt, ...)  log_print("INFO", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__)
+// 日志宏（自动获取线程ID和名字）
+#define LOG_INFO(fmt, ...)  log_print("INFO", __FILE__, __LINE__, get_current_tid(), get_current_thread_name(), fmt, ##__VA_ARGS__)
 #define LOG_DEBUG(fmt, ...) \
     do { \
         if (g_log_level >= LOG_LEVEL_DEBUG) \
-            log_print("DEBUG", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__); \
+            log_print("DEBUG", __FILE__, __LINE__, get_current_tid(), get_current_thread_name(), fmt, ##__VA_ARGS__); \
     } while(0)
 #define LOG_SEM(fmt, ...) \
     do { \
         if (g_log_level >= LOG_LEVEL_SEM) \
-            log_print("SEM  ", __FILE__, __LINE__, get_current_tid(), fmt, ##__VA_ARGS__); \
+            log_print("SEM  ", __FILE__, __LINE__, get_current_tid(), get_current_thread_name(), fmt, ##__VA_ARGS__); \
     } while(0)
 
 // 信号量操作日志宏（使用 SEM 级别）

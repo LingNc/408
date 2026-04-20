@@ -1,20 +1,27 @@
 #include "thread.h"
 #include <cstdio>
 
-// 线程局部存储：当前线程ID
+// 线程局部存储：当前线程ID和线程名字
 static __thread int current_tid = 0;
+static __thread const char* current_thread_name = "";
 
 // 获取当前线程ID（供日志系统使用）
 extern "C" int get_current_tid() {
     return current_tid;
 }
 
+// 获取当前线程名字（供日志系统使用）
+extern "C" const char* get_current_thread_name() {
+    return current_thread_name ? current_thread_name : "";
+}
+
 // 线程包装函数
 void* ThreadManager::threadWrapper(void* arg) {
     ThreadInstance* inst = (ThreadInstance*)arg;
     current_tid = inst->tid;  // 设置线程局部ID（供日志使用）
+    current_thread_name = inst->name.c_str();  // 设置线程局部名字（供日志使用）
     for (int i = 0; i < inst->repeat; i++) {
-        inst->func();  // 不传递参数，线程ID从日志获取
+        inst->func();  // 不传递参数，线程ID和名字从日志获取
     }
     return NULL;
 }
