@@ -92,8 +92,12 @@ process      // void 的类型别名
 | `pd1.cpp` | 哲学家问题 - 限制同时就餐人数 |
 | `pd2.cpp` | 哲学家问题 - 奇偶不同顺序拿筷子 |
 | `pd3.cpp` | 哲学家问题 - 互斥锁 + 信号量 |
-| `producer-consumer.cpp` | 生产者消费者问题 |
+| `philosopher-dining.cpp` | 哲学家问题 - 经典解法 |
+| `pc1.cpp` | 生产者消费者 - 父母孩子苹果橘子问题 |
+| `producer-consumer.cpp` | 生产者消费者 - 多生产者多消费者 |
+| `precursor.cpp` | 前驱图 - 六个进程的前驱关系 |
 | `rw.cpp` | 读者写者问题 |
+| `rw-writer.cpp` | 读者写者 - 写者优先 |
 
 ## 日志级别
 
