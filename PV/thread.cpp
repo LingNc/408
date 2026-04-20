@@ -1,5 +1,8 @@
 #include "thread.h"
+#include "log.h"
+#include "utils.h"
 #include <cstdio>
+#include <chrono>
 
 // 线程局部存储：当前线程ID和线程名字
 static __thread int current_tid = 0;
@@ -20,6 +23,7 @@ void* ThreadManager::threadWrapper(void* arg) {
     ThreadInstance* inst = (ThreadInstance*)arg;
     current_tid = inst->tid;  // 设置线程局部ID（供日志使用）
     current_thread_name = inst->name.c_str();  // 设置线程局部名字（供日志使用）
+
     for (int i = 0; i < inst->repeat; i++) {
         inst->func();  // 不传递参数，线程ID和名字从日志获取
     }
@@ -48,6 +52,9 @@ void ThreadManager::runAll() {
     pthread_ids.clear();
     pthread_ids.resize(instances.size());
 
+    // 记录开始时间
+    auto start = std::chrono::high_resolution_clock::now();
+
     // 创建所有线程
     for (size_t i = 0; i < instances.size(); i++) {
         ThreadInstance* inst = &instances[i];
@@ -61,6 +68,11 @@ void ThreadManager::runAll() {
     for (size_t i = 0; i < pthread_ids.size(); i++) {
         pthread_join(pthread_ids[i], NULL);
     }
+
+    // 计算并输出用时
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration<double>(end - start).count();
+    LOG_INFO("所有线程执行完成，总用时：%.3fs", duration);
 }
 
 void ThreadManager::clear() {
